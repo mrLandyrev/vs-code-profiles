@@ -3,8 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
+	"path"
+)
+
+const (
+	storagePath = ".vs-code-profiles"
+	dbName      = "profiles.data"
 )
 
 var home string
@@ -13,7 +20,8 @@ var profiles []Profile
 
 func main() {
 	home, _ = os.UserHomeDir()
-	dbPath = fmt.Sprintf("%s/%s", home, ".vs-code-profiles/profiles.data")
+	os.Mkdir(path.Join(home, storagePath), fs.ModeDir)
+	dbPath = path.Join(home, storagePath, dbName)
 	Load()
 	switch os.Args[1] {
 	case "--create":
@@ -72,7 +80,7 @@ func CreateProfile() *Profile {
 	fmt.Println("Enter new profile alias:")
 	fmt.Scanln(&profile.Alias)
 	var dirBuff string
-	tempDir := fmt.Sprintf("%s/.vs-code-profiles/%s/data", home, profile.Alias)
+	tempDir := path.Join(home, storagePath, profile.Alias, "data")
 	fmt.Printf("Enter new profile user date directory (default: %s):\n", tempDir)
 	fmt.Scanln(&dirBuff)
 	if dirBuff == "" {
@@ -80,7 +88,7 @@ func CreateProfile() *Profile {
 	} else {
 		profile.UserDataDir = dirBuff
 	}
-	tempDir = fmt.Sprintf("%s/.vs-code-profiles/%s/extensions", home, profile.Alias)
+	tempDir = path.Join(home, storagePath, profile.Alias, "extensions")
 	fmt.Printf("Enter new profile extensions directory (default: %s):\n", tempDir)
 	fmt.Scanln(&dirBuff)
 	if dirBuff == "" {
