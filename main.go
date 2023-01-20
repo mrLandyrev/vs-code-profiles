@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
 	"os/exec"
 	"path"
@@ -20,7 +19,7 @@ var profiles []Profile
 
 func main() {
 	home, _ = os.UserHomeDir()
-	os.Mkdir(path.Join(home, storagePath), fs.ModeDir)
+	os.Mkdir(path.Join(home, storagePath), 0777)
 	dbPath = path.Join(home, storagePath, dbName)
 	Load()
 	switch os.Args[1] {
